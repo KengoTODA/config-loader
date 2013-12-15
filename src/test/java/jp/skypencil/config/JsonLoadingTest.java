@@ -24,6 +24,12 @@ public class JsonLoadingTest {
         assertThat(config.getFoo(), is("foo"));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void loadBrokenFile() {
+        ConfigLoader loader = new ConfigLoader();
+        loader.load(new File(testResourceDir, "unknown-property.conf"), Config.class);
+    }
+
     public static class Config {
         private String foo;
         private String bar;
