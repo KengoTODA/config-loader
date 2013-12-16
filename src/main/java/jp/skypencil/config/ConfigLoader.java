@@ -7,8 +7,6 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
@@ -17,7 +15,7 @@ public class ConfigLoader {
 
     public <T> T load(File file, Class<T> configClass) {
         try {
-            File strictJson = reconstruct(file);
+            String strictJson = reconstruct(file);
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(strictJson, configClass);
         } catch (JsonParseException | JsonMappingException e) {
@@ -27,12 +25,9 @@ public class ConfigLoader {
         }
     }
 
-    private File reconstruct(File hocon) throws IOException {
-        File strictJson = File.createTempFile("config-loader", ".json");
+    private String reconstruct(File hocon) throws IOException {
         Config parsed = ConfigFactory.parseFile(hocon).resolve();
-        String reconstructed = parsed.root().render(ConfigRenderOptions.concise());
-        Files.write(reconstructed.getBytes(Charsets.UTF_8), strictJson);
-        return strictJson;
+        return parsed.root().render(ConfigRenderOptions.concise());
     }
 
 }
